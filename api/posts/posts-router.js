@@ -32,7 +32,6 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-
 router.post('/', (req, res) => {
     const post = req.body;
 
@@ -54,5 +53,29 @@ router.post('/', (req, res) => {
     }
 })
 
+router.put('/:id', async (req, res) => {
+    try {
+        const editedPost = await Posts.findById(req.params.id);
+        if (!editedPost) {
+            return res.status(404).json({
+                message: "The post with the specified ID does not exist"
+            });
+        }
+        if (!req.body.title || !req.body.contents) {
+            return res.status(400).json({
+                message: "Please provide title and contents for the post"
+            });
+        }
+        const updatedPost = await Posts.update(req.params.id, req.body);
+        return res.status(200).json({
+            message: "Post updated successfully",
+            updatedPost
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "The post information could not be modified"
+        });
+    }
+});
 
 module.exports = router;
